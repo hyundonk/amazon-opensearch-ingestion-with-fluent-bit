@@ -1,0 +1,4 @@
+FROM 906394416424.dkr.ecr.ap-northeast-2.amazonaws.com/aws-for-fluent-bit:2.32.2.20240516
+
+# copy aws_signing_helper
+COPY ./aws_signing_helper /bin/aws_signing_helper 

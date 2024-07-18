@@ -1,0 +1,47 @@
+networks:
+  logging_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+services:
+  python-app:
+    build: ./python-app
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./python-app:/app
+    logging:
+      driver: fluentd
+      options:
+        tag: "docker.{{.Name}}"
+        fluentd-address: 172.20.10.4:24224
+        fluentd-async-connect: "true"
+        fluentd-retry-wait: 1s
+        fluentd-max-retries: 30
+    networks:
+      logging_network:
+        ipv4_address: 172.20.10.1  
+    depends_on:
+      - fluent-bit
+
+  fluent-bit:
+    build:
+      context: .
+      dockerfile: Dockerfile.fluent-bit
+    volumes:
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./private_key.pem:/etc/private_key.pem
+      - ./certificate.pem:/etc/certificate.pem
+      - ./aws_signing_helper_config.json:/etc/config.json
+    ports:
+      - "24224:24224"
+    environment:
+      - AWS_PROFILE=default
+      - AWS_CONFIG_FILE=/etc/config.json
+    networks:
+      logging_network:
+        ipv4_address: 172.20.10.4
