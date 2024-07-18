@@ -112,8 +112,7 @@ docker-compose --env-file .env up --build &
 
 ## Scenario 2. Using AWS IAM Roles Anywhere
 
-This scenario is for using temporary credential that AWS IAM Roles Anywhere provides in non-AWS environment. This demo is described for explanation but usually not recommended as it is long-term credential which can add security risk and operational complexity in creating/distributing/renewing long-term credential in secure way. 
-
+This scenario is for using temporary credential that AWS IAM Roles Anywhere provides in non-AWS environment. 
 
 
 ### Pre-requisites
