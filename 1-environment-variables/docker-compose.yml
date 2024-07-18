@@ -1,0 +1,43 @@
+version: '3.8'
+networks:
+  logging_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+services:
+  python-app:
+    build: ./python-app
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./python-app:/app
+    logging:
+      driver: fluentd
+      options:
+        tag: "docker.{{.Name}}"
+        fluentd-address: 172.20.10.4:24224
+        fluentd-async-connect: "true"
+        fluentd-retry-wait: 1s
+        fluentd-max-retries: 30
+    networks:
+      logging_network:
+        ipv4_address: 172.20.10.1  
+    depends_on:
+      - fluent-bit
+
+  fluent-bit:
+    image: 906394416424.dkr.ecr.ap-northeast-2.amazonaws.com/aws-for-fluent-bit:2.32.2.20240516
+    volumes:
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "24224:24224"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    networks:
+      logging_network:
+        ipv4_address: 172.20.10.4
