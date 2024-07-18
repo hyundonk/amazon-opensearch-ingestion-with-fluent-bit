@@ -1,5 +1,5 @@
 # amazon-opensearch-ingestion-with-fluent-bit
-Demos on how to configure fluent-bit for Amazon Opensearch Ingestion
+Demos on how to configure fluent-bit for Amazon Opensearch Ingestion. Please note that code in this repo is intended for demo purpose and not for production workload.
 
 
 
